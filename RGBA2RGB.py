@@ -9,7 +9,7 @@ for each in os.listdir(src):
     png = Image.open(os.path.join(src,each))
     if png.mode == 'RGBA':
         png.load() # required for png.split()
-        background = Image.new("RGB", png.size, (0,0,0))
+        background = Image.new("RGB", png.size, (255,255,255))
         background.paste(png, mask=png.split()[3]) # 3 is the alpha channel
         background.save(os.path.join(dst,each.split('.')[0] + '.jpg'), 'JPEG')
     else:

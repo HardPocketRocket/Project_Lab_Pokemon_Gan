@@ -15,7 +15,7 @@ slim = tf.contrib.slim
 
 HEIGHT, WIDTH, CHANNEL = 128, 128, 3
 BATCH_SIZE = 64
-EPOCH = 3001
+EPOCH = 2001
 version = 'newPokemon'
 newPoke_path = './' + version
 
@@ -25,7 +25,7 @@ def lrelu(x, n, leak=0.2):
 def process_data():
     current_dir = os.getcwd()
     # parent = os.path.dirname(current_dir)
-    pokemon_dir = os.path.join(current_dir, 'resizedData')
+    pokemon_dir = os.path.join(current_dir, 'resizedData/output')
     images = []
     for each in os.listdir(pokemon_dir):
         images.append(os.path.join(pokemon_dir,each))
@@ -124,7 +124,7 @@ def discriminator(input, is_train, reuse=False):
                                  kernel_initializer=tf.truncated_normal_initializer(stddev=0.02),
                                  name='conv1')
         bn1 = tf.contrib.layers.batch_norm(conv1, is_training = is_train, epsilon=1e-5, decay = 0.9,  updates_collections=None, scope = 'bn1')
-        act1 = lrelu(conv1, n='act1')
+        act1 = lrelu(bn1, n='act1')
          #Convolution, activation, bias, repeat!
         conv2 = tf.layers.conv2d(act1, c4, kernel_size=[5, 5], strides=[2, 2], padding="SAME",
                                  kernel_initializer=tf.truncated_normal_initializer(stddev=0.02),
@@ -229,6 +229,8 @@ def train():
                 except:
                   print("error")
                 #wgan clip weights
+                train_image = sess.run(image_batch)
+
                 sess.run(d_clip)
 
                 # Update the discriminator
@@ -264,25 +266,25 @@ def train():
 
 
 # def test():
-    # random_dim = 100
-    # with tf.variable_scope('input'):
-        # real_image = tf.placeholder(tf.float32, shape = [None, HEIGHT, WIDTH, CHANNEL], name='real_image')
-        # random_input = tf.placeholder(tf.float32, shape=[None, random_dim], name='rand_input')
-        # is_train = tf.placeholder(tf.bool, name='is_train')
+#     random_dim = 100
+#     with tf.variable_scope('input'):
+#         real_image = tf.placeholder(tf.float32, shape = [None, HEIGHT, WIDTH, CHANNEL], name='real_image')
+#         random_input = tf.placeholder(tf.float32, shape=[None, random_dim], name='rand_input')
+#         is_train = tf.placeholder(tf.bool, name='is_train')
 
-    # # wgan
-    # fake_image = generator(random_input, random_dim, is_train)
-    # real_result = discriminator(real_image, is_train)
-    # fake_result = discriminator(fake_image, is_train, reuse=True)
-    # sess = tf.InteractiveSession()
-    # sess.run(tf.global_variables_initializer())
-    # variables_to_restore = slim.get_variables_to_restore(include=['gen'])
-    # print(variables_to_restore)
-    # saver = tf.train.Saver(variables_to_restore)
-    # ckpt = tf.train.latest_checkpoint('./model/' + version)
-    # saver.restore(sess, ckpt)
+#     # wgan
+#     fake_image = generator(random_input, random_dim, is_train, reuse=True)
+#     real_result = discriminator(real_image, is_train, reuse=True)
+#     fake_result = discriminator(fake_image, is_train, reuse=True)
+#     sess = tf.InteractiveSession()
+#     sess.run(tf.global_variables_initializer())
+#     variables_to_restore = slim.get_variables_to_restore(include=['gen'])
+#     print(variables_to_restore)
+#     saver = tf.train.Saver(variables_to_restore)
+#     ckpt = tf.train.latest_checkpoint('./model/' + version)
+#     saver.restore(sess, ckpt)
 
 
 if __name__ == "__main__":
     train()
-    # test()
+    #test()
